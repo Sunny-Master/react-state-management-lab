@@ -4,9 +4,10 @@ import { useState } from "react";
 import './App.css'
 
 const App = () => {
+  const [isMoneyEnough, setIsMoneyEnough] = useState(true)
   const [team, setTeam] = useState([])
   const [money, setMoney] = useState(100)
-  const [zombieFighters, setZombieFighters] = useState ([
+  const [zombieFighters, setZombieFighters] = useState([
     {
       name: 'Survivor',
       price: 12,
@@ -78,6 +79,18 @@ const App = () => {
       img: 'https://via.placeholder.com/150/602b9e',
     },
   ])
+
+  function handleAddFighter(idx) {
+    if (money - zombieFighters.at(idx)['price'] < 0) {
+      console.log('Not enough money!!')
+      setIsMoneyEnough(false)
+    } else {
+      setIsMoneyEnough(true)
+      setTeam([...team, zombieFighters.at(idx)])
+      setMoney(money - zombieFighters.at(idx)['price'])
+    }
+  }
+
   return (
     <>
       <h1>Zombie Fighters</h1>
@@ -89,14 +102,17 @@ const App = () => {
       <h2>Fighters</h2>
       <ul>
         {zombieFighters.map((zombieFighter, index) => (
-          <li key={index}>
-            <li><img src={zombieFighter.img} alt={zombieFighter.name} /></li>
-            <li>{zombieFighter.name}</li>
-            <li>Price: {zombieFighter.price}</li>
-            <li>Strength: {zombieFighter.strength}</li>
-            <li>Agility: {zombieFighter.agility}</li>
-            <li><button>Add</button></li>
-          </li>
+            <li key={index}>
+              <li><img src={zombieFighter.img} alt={zombieFighter.name} /></li>
+              <li>{zombieFighter.name}</li>
+              <li>Price: {zombieFighter.price}</li>
+              <li>Strength: {zombieFighter.strength}</li>
+              <li>Agility: {zombieFighter.agility}</li>
+              <li>
+                <button onClick={() => handleAddFighter(index)}>Add</button>
+              </li>
+              {/* {!isMoneyEnough && <p>Money is not enough to buy a {zombieFighter.name}</p>} */}
+            </li>
         ))}
       </ul>
     </>
