@@ -98,7 +98,18 @@ const App = () => {
       <h2>Team Strength: </h2>
       <h2>Team Agility: </h2>
       <h2>Team</h2>
-
+      {team.length === 0 && <p>Pick some team members!</p>}
+      <ul>
+        {team.map((fighter, index) => (
+          <li key={index}>
+            <li><img src={fighter.img} alt={fighter.name} /></li>
+            <li>{fighter.name}</li>
+            <li>Price: {fighter.price}</li>
+            <li>Strength: {fighter.strength}</li>
+            <li>Agility: {fighter.agility}</li>
+          </li>
+        ))}
+      </ul>
       <h2>Fighters</h2>
       <ul>
         {zombieFighters.map((zombieFighter, index) => (
