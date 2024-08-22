@@ -4,9 +4,10 @@ import { useState } from "react";
 import './App.css'
 
 const App = () => {
-  const [isMoneyEnough, setIsMoneyEnough] = useState(true)
   const [team, setTeam] = useState([])
   const [money, setMoney] = useState(100)
+  const [totalStrength, setTotalStrength] = useState(0)
+  const [totalAgility, setTotalAgility] = useState(0)
   const [zombieFighters, setZombieFighters] = useState([
     {
       name: 'Survivor',
@@ -80,23 +81,49 @@ const App = () => {
     },
   ])
 
+  function calcTotalStrength(copyTeam) {
+    return(copyTeam.reduce((accStrength, fighter) => {
+      return(accStrength + fighter.strength)
+    }, 0))
+  }
+
+  function calcTotalAgility(copyTeam) {
+    return(copyTeam.reduce((accAgility, fighter) => {
+      return(accAgility + fighter.agility)
+    }, 0))
+  }
+
   function handleAddFighter(idx) {
     if (money - zombieFighters.at(idx)['price'] < 0) {
       console.log('Not enough money!!')
-      setIsMoneyEnough(false)
-    } else {
-      setIsMoneyEnough(true)
-      setTeam([...team, zombieFighters.at(idx)])
-      setMoney(money - zombieFighters.at(idx)['price'])
+      return
     }
+    const copyTeam = [...team, zombieFighters.at(idx)]
+    const teamStrength = calcTotalStrength(copyTeam)
+    const teamAgility = calcTotalAgility(copyTeam)
+    setMoney(money - zombieFighters.at(idx)['price'])
+    setTeam(copyTeam)
+    setTotalStrength(teamStrength)
+    setTotalAgility(teamAgility)
+  }
+
+  function handleRemoveFighter(idx) {
+    const copyTeam = [...team]
+    copyTeam.splice(idx, 1)
+    const teamStrength = calcTotalStrength(copyTeam)
+    const teamAgility = calcTotalAgility(copyTeam)
+    setMoney(money + team.at(idx)['price'])
+    setTeam(copyTeam)
+    setTotalStrength(teamStrength)
+    setTotalAgility(teamAgility)
   }
 
   return (
     <>
       <h1>Zombie Fighters</h1>
       <h2>Money: {money}</h2>
-      <h2>Team Strength: </h2>
-      <h2>Team Agility: </h2>
+      <h2>Team Strength: {totalStrength}</h2>
+      <h2>Team Agility: {totalAgility}</h2>
       <h2>Team</h2>
       {team.length === 0 && <p>Pick some team members!</p>}
       <ul>
@@ -107,6 +134,9 @@ const App = () => {
             <li>Price: {fighter.price}</li>
             <li>Strength: {fighter.strength}</li>
             <li>Agility: {fighter.agility}</li>
+            <li>
+              <button onClick={() => handleRemoveFighter(index)}>Remove</button>
+            </li>
           </li>
         ))}
       </ul>
@@ -122,7 +152,7 @@ const App = () => {
               <li>
                 <button onClick={() => handleAddFighter(index)}>Add</button>
               </li>
-              {/* {!isMoneyEnough && <p>Money is not enough to buy a {zombieFighter.name}</p>} */}
+              {(money - zombieFighter.price < 0) && <li>(Not enough money)</li>}
             </li>
         ))}
       </ul>
