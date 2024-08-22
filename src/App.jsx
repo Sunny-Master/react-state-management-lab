@@ -8,6 +8,7 @@ const App = () => {
   const [money, setMoney] = useState(100)
   const [totalStrength, setTotalStrength] = useState(0)
   const [totalAgility, setTotalAgility] = useState(0)
+  // defining the zombieFighters as a state as instructed in the Lab, however, it could be just an array of objects
   const [zombieFighters, setZombieFighters] = useState([
     {
       name: 'Survivor',
@@ -81,41 +82,25 @@ const App = () => {
     },
   ])
 
-  function calcTotalStrength(copyTeam) {
-    return(copyTeam.reduce((accStrength, fighter) => {
-      return(accStrength + fighter.strength)
-    }, 0))
-  }
-
-  function calcTotalAgility(copyTeam) {
-    return(copyTeam.reduce((accAgility, fighter) => {
-      return(accAgility + fighter.agility)
-    }, 0))
-  }
-
   function handleAddFighter(idx) {
     if (money - zombieFighters.at(idx)['price'] < 0) {
       console.log('Not enough money!!')
       return
     }
     const copyTeam = [...team, zombieFighters.at(idx)]
-    const teamStrength = calcTotalStrength(copyTeam)
-    const teamAgility = calcTotalAgility(copyTeam)
     setMoney(money - zombieFighters.at(idx)['price'])
+    setTotalStrength(totalStrength + zombieFighters.at(idx)['strength'])
+    setTotalAgility(totalAgility + zombieFighters.at(idx)['agility'])
     setTeam(copyTeam)
-    setTotalStrength(teamStrength)
-    setTotalAgility(teamAgility)
   }
 
   function handleRemoveFighter(idx) {
     const copyTeam = [...team]
-    copyTeam.splice(idx, 1)
-    const teamStrength = calcTotalStrength(copyTeam)
-    const teamAgility = calcTotalAgility(copyTeam)
+    copyTeam.splice(idx, 1) // using array.filter() is not working so used array.splice()
     setMoney(money + team.at(idx)['price'])
+    setTotalStrength(totalStrength - team.at(idx)['strength'])
+    setTotalAgility(totalAgility - team.at(idx)['agility'])
     setTeam(copyTeam)
-    setTotalStrength(teamStrength)
-    setTotalAgility(teamAgility)
   }
 
   return (
